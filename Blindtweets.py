@@ -1,16 +1,16 @@
 #!/usr/bin/env python
-
 import tweepy
 import json
-
 con_key = "Consumer key"
 con_sec = "Consumer secret key"
 acc_key = "Access key"
 acc_sec = "Access secret key"
-
-
 if __name__ == '__main__':
-	print("Hello and welcome to this version of MiniProject 1.\nThis module was coded by Thomas Kelly.\nPlease enter your consumer key.")
+	con_key = input("Hello and welcome to this version of MiniProject 1.\nThis module was coded by Thomas Kelly.\nPlease enter your Consumer Key.\n")
+	con_sec = input("Please enter your Consumer Secret Key\n")
+	acc_key = input("Please enter your Access Key\n")
+	acc_sec = input("Please enter your Access Secret Key\n")
+	print(con_key+con_sec+acc_key+acc_sec)
 	#get codes
 	#get twitter name
 	#digest name
