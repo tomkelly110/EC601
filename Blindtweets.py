@@ -2,8 +2,12 @@
 import tweepy
 import json
 import wget
+import requests
 from google.cloud import vision
 from google.cloud.vision import types
+from PIL import Image
+from io import BytesIO
+from subprocess import Popen, PIPE
 con_key = "Consumer key"
 con_sec = "Consumer secret key"
 acc_key = "Access key"
@@ -12,30 +16,31 @@ acc_sec = "Access secret key"
 def digest(username):
 	keyring = tweepy.OAuthHandler(con_key, con_sec)
 	keyring.set_access_token(acc_key, acc_sec)
-	tweetapi = tweepy.API(keyring)
+	tweetapi = tweepy.API(keyring)		#Authenication
 	tweetlist = []
-	tweetlist = tweetapi.user_timeline(screen_name = username, count = 10)
-	print(tweetlist[0].text)
+	tweetlist = tweetapi.user_timeline(screen_name = username, count = 10) #get tweets
+	#print(tweetlist[0].text)
 	media_files = set()
-	for status in tweetlist:
-		media = status.entities.get('media', [])
+	for status in tweetlist:			#go through all tweets
+		media = status.entities.get('media', [])	#see if there is an image
 		if(len(media) > 0):
-			media_files.add(media[0]['media_url'])
+			media_files.add(media[0]['media_url'])	# if so save its url to list
 	client = vision.ImageAnnotatorClient()
 	image = vision.types.Image()
-	for media_file in media_files:
+	p = Popen(['ffmpeg', '-y', '-f', 'image2pipe', '-vcodec', 'mjpeg', '-r', '24', '-i', '-', '-vcodec', 'mpeg4', '-qscale', '5', '-r', '24', 'video.avi'], stdin=PIPE)
+	for media_file in media_files:			#for all the image urls in the list
 		image.source.image_uri = media_file
-		response = client.label_detection(image=image)
+		response = client.label_detection(image=image) #send to google vision and get response
 		labels = response.label_annotations
 		for label in labels:
 			print(label.description)
+		imageresponse = requests.get(media_file)
+		img = Image.open(BytesIO(imageresponse.content))
+		img.save(p.stdin, 'JPEG')
+	p.stdin.close()
+	p.wait()
 	#for media_file in media_files:
 	#	wget.download(media_file)
-	#seperate out images
-	#put images into video
-	#put video into vision
-	#output vision text
-
 
 if __name__ == '__main__':
 	con_key = input("Hello and welcome to this version of MiniProject 1.\nThis module was coded by Thomas Kelly.\nPlease enter your Consumer Key.\n")
