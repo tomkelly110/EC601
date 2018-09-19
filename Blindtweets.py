@@ -29,7 +29,7 @@ def digest(username):
 	p = Popen(['ffmpeg', '-y', '-f', 'image2pipe', '-vcodec', 'mjpeg', '-r', '1/2', '-i', '-', '-vcodec', 'mpeg4', '-q:a', '5', '-r', '24', '%s.avi' % (username)], stdin=PIPE) #sets up ffmpeg pipe, overwrites output, changes format, framerate is 1/2
 	textfile = open("%s.txt" % (username),"w+") #create text file
 	for media_file in media_files:			#for all the image urls in the list
-		textfile.write("\nImage: ")			#write header for each image (url) to text file
+		textfile.write("\n\nImage: ")			#write header for each image (url) to text file
 		textfile.write(media_file)
 		image.source.image_uri = media_file
 		response = client.label_detection(image=image) #send to google vision and get response
@@ -53,7 +53,11 @@ if __name__ == '__main__':
 	targetname = "@NatGeoPhotos"
 	while flag > 0:
 		targetname = input("Please enter the desired twitter handle, including the @ symbol\n")
-		amount = int(input("Please enter the number of tweets to process\n"))
-		digest(targetname)
+		try:
+			amount = int(input("Please enter the number of tweets to process\n"))
+			digest(targetname)
+		except Exception as issue:
+			print("There was an error")
+			print(type(issue))
 		if input("Would you like to see any other twitter handles? (y/n)\n") != "y":
 			flag = 0
