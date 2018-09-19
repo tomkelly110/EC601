@@ -7,9 +7,12 @@ acc_key = "Access key"
 acc_sec = "Access secret key"
 
 def digest(username):
-	print(username)
-	#authorize to twitter
-	#put tweets in list
+	keyring = tweepy.OAuthHandler(con_key, con_sec)
+	keyring.set_access_token(acc_key, acc_sec)
+	tweetapi = tweepy.API(keyring)
+	tweetlist = []
+	tweetlist = tweetapi.user_timeline(screen_name = username, count = 5)
+	print(tweetlist[0].text)
 	#seperate out images
 	#put images into video
 	#put video into vision
@@ -21,7 +24,6 @@ if __name__ == '__main__':
 	con_sec = input("Please enter your Consumer Secret Key\n")
 	acc_key = input("Please enter your Access Key\n")
 	acc_sec = input("Please enter your Access Secret Key\n")
-	print(con_key+con_sec+acc_key+acc_sec)
 	flag = 1
 	targetname = "@BarackObama"
 	while flag > 0:
