@@ -27,13 +27,18 @@ def digest(username):
 			media_files.add(media[0]['media_url'])	# if so save its url to list
 	client = vision.ImageAnnotatorClient()
 	image = vision.types.Image()
-	p = Popen(['ffmpeg', '-y', '-f', 'image2pipe', '-vcodec', 'mjpeg', '-r', '24', '-i', '-', '-vcodec', 'mpeg4', '-qscale', '5', '-r', '24', 'video.avi'], stdin=PIPE)
+	p = Popen(['ffmpeg', '-y', '-f', 'image2pipe', '-vcodec', 'mjpeg', '-r', '1/2', '-i', '-', '-vcodec', 'mpeg4', '-q:a', '5', '-r', '24', 'output.avi'], stdin=PIPE) #sets up ffmpeg pipe, overwrites output, changes format, framerate is 1/2
+	textfile = open("%s.txt" % (username),"w+")
 	for media_file in media_files:			#for all the image urls in the list
+		textfile.write("\nImage: ")
+		textfile.write(media_file)
 		image.source.image_uri = media_file
 		response = client.label_detection(image=image) #send to google vision and get response
 		labels = response.label_annotations
 		for label in labels:
 			print(label.description)
+			textfile.write("\n")
+			textfile.write(label.description)
 		imageresponse = requests.get(media_file)
 		img = Image.open(BytesIO(imageresponse.content))
 		img.save(p.stdin, 'JPEG')
