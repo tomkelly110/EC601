@@ -2,6 +2,8 @@
 import tweepy
 import json
 import wget
+from google.cloud import vision
+from google.cloud.vision import types
 con_key = "Consumer key"
 con_sec = "Consumer secret key"
 acc_key = "Access key"
@@ -19,8 +21,16 @@ def digest(username):
 		media = status.entities.get('media', [])
 		if(len(media) > 0):
 			media_files.add(media[0]['media_url'])
+	client = vision.ImageAnnotatorClient()
+	image = vision.types.Image()
 	for media_file in media_files:
-		wget.download(media_file)
+		image.source.image_uri = media_file
+		response = client.label_detection(image=image)
+		labels = response.label_annotations
+		for label in labels:
+			print(label.description)
+	#for media_file in media_files:
+	#	wget.download(media_file)
 	#seperate out images
 	#put images into video
 	#put video into vision
